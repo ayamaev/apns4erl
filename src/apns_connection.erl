@@ -341,7 +341,7 @@ do_build_payload([{Key, Value} | Params], Payload) ->
         Params,
         [ {atom_to_binary(Key, utf8), unicode:characters_to_binary(Value)}
         | Payload]);
-    Value when is_integer(Value) ->
+    Value when is_integer(Value); is_map(Value) ->
       do_build_payload(Params, [{atom_to_binary(Key, utf8), Value} | Payload]);
     #loc_alert{action = Action,
                args   = Args,

@@ -1,6 +1,7 @@
 .rebar/
 deps
-ebin
+ebin/*.beam
+ebin/*.app
 log/*.log
 tmp
 tmp/**/*

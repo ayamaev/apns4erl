@@ -1,5 +1,5 @@
 {"1.0.7",
  [{"1.0.6",
-   [{load_module,odbc_global_pay}]
+   [{load_module,apns_connection}]
    }],
  [{"1.0.6",[]}]}.

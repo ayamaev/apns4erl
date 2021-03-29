@@ -71,31 +71,31 @@
 -type keydata()      :: {'RSAPrivateKey' | 'DSAPrivateKey' | 'ECPrivateKey' |
                          'PrivateKeyInfo'
                         , binary()}.
--type proxy_info()   :: #{ type       := connect
-                         , host       := host()
-                         , port       := inet:port_number()
+-type proxy_info()   :: #{ type       => connect
+                         , host       => host()
+                         , port       => inet:port_number()
                          , username   => iodata()
                          , password   => iodata()
                          }.
--type connection()   :: #{ name       := name()
-                         , apple_host := host()
-                         , apple_port := inet:port_number()
+-type connection()   :: #{ name       => name()
+                         , apple_host => host()
+                         , apple_port => inet:port_number()
                          , certdata   => binary()
                          , certfile   => path()
                          , keydata    => keydata()
                          , keyfile    => path()
                          , timeout    => integer()
-                         , type       := type()
+                         , type       => type()
                          , proxy_info => proxy_info()
                          }.
 
--type state()        :: #{ connection      := connection()
+-type state()        :: #{ connection      => connection()
                          , gun_pid         => pid()
                          , gun_monitor     => reference()
                          , gun_connect_ref => reference()
-                         , client          := pid()
-                         , backoff         := non_neg_integer()
-                         , backoff_ceiling := non_neg_integer()
+                         , client          => pid()
+                         , backoff         => non_neg_integer()
+                         , backoff_ceiling => non_neg_integer()
                          }.
 
 %%%===================================================================
@@ -267,7 +267,7 @@ await_up(info, {gun_up, GunPid, Protocol}, #{gun_pid := GunPid} = StateData) ->
   {next_state, NextState, StateData,
     {next_event, internal, on_connect}};
 await_up(EventType, EventContent, StateData) ->
-  handle_common(EventType, EventContent, ?FUNCTION_NAME, StateData, postpone).
+  handle_common(EventType, EventContent, await_up, StateData, postpone).
 
 -spec proxy_connect_to_origin(_, _, _) -> _.
 proxy_connect_to_origin(internal, on_connect, StateData) ->
@@ -298,7 +298,7 @@ await_tunnel_up( info
   {next_state, connected, StateData,
     {next_event, internal, on_connect}};
 await_tunnel_up(EventType, EventContent, StateData) ->
-  handle_common(EventType, EventContent, ?FUNCTION_NAME, StateData, postpone).
+  handle_common(EventType, EventContent, await_tunnel_up, StateData, postpone).
 
 -spec connected(_, _, _) -> _.
 connected(internal, on_connect, #{client := Client}) ->
@@ -326,7 +326,7 @@ connected({call, From}, wait_apns_connection_up, _) ->
 connected({call, From}, Event, _) when Event =/= gun_pid ->
   {keep_state_and_data, {reply, From, {error, bad_call}}};
 connected(EventType, EventContent, StateData) ->
-  handle_common(EventType, EventContent, ?FUNCTION_NAME, StateData, drop).
+  handle_common(EventType, EventContent, connected, StateData, drop).
 
 -spec down(_, _, _) -> _.
 down(internal
@@ -346,7 +346,7 @@ down(state_timeout, backoff, StateData) ->
   {next_state, open_connection, StateData,
     {next_event, internal, init}};
 down(EventType, EventContent, StateData) ->
-  handle_common(EventType, EventContent, ?FUNCTION_NAME, StateData, postpone).
+  handle_common(EventType, EventContent, down, StateData, postpone).
 
 -spec handle_common(_, _, _, _, _) -> _.
 handle_common({call, From}, gun_pid, _, #{gun_pid := GunPid}, _) ->
